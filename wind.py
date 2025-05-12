@@ -33,7 +33,7 @@ async def main():
         while True:
             wind_speed = simulate_wind_speed(wind_speed)
             print(f"Wind Speed: {wind_speed:.2f} m/s")
-            await asyncio.sleep(5)
+            await asyncio.sleep(9)
     except asyncio.CancelledError:
         server.close()
         await server.wait_closed()
