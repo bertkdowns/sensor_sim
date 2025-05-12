@@ -15,11 +15,18 @@ def simulate_wind_speed(current_speed):
     step = random.uniform(-0.5, 0.5)  # Random step between -0.5 and 0.5
     return max(0, current_speed + step)  # Ensure wind speed is non-negative
 
+# Function to introduce occasional fake values
+def introduce_noise(wind_speed):
+    if random.random() < 0.1:  # 10% chance to introduce noise
+        return -1000
+    return wind_speed
+
 # WebSocket server handler
 async def wind_speed_server(websocket, path):
     global wind_speed
     while True:
-        await websocket.send(f"{wind_speed:.2f}") # m/s
+        noisy_speed = introduce_noise(wind_speed)
+        await websocket.send(f"{noisy_speed:.2f}")  # m/s
         await asyncio.sleep(5)
 
 # Main function to update wind speed and print to console
@@ -32,8 +39,9 @@ async def main():
     try:
         while True:
             wind_speed = simulate_wind_speed(wind_speed)
-            print(f"Wind Speed: {wind_speed:.2f} m/s")
-            await asyncio.sleep(9)
+            noisy_speed = introduce_noise(wind_speed)
+            print(f"Wind Speed: {noisy_speed:.2f} m/s")
+            await asyncio.sleep(5)
     except asyncio.CancelledError:
         server.close()
         await server.wait_closed()
